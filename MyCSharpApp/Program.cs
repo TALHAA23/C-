@@ -52,10 +52,21 @@ class Program
     private static void InsertIntoMongoDB(IMongoDatabase database, string collectionName, string data)
     {
         var collection = database.GetCollection<BsonDocument>(collectionName);
-        var document = BsonDocument.Parse(data);
-        collection.InsertOne(document);
+        var jsonData = BsonDocument.Parse(data);
+        var results = jsonData.GetValue("results").AsBsonArray;
+
+        foreach (var result in results)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("id", result["id"]);
+            var update = Builders<BsonDocument>.Update.SetOnInsert("id", result["id"]).SetOnInsert("data", result);
+            var options = new UpdateOptions { IsUpsert = true };
+
+            collection.UpdateOne(filter, update, options);
+        }
+
         Console.WriteLine("Data inserted into MongoDB!");
     }
+
     private static void ReadAllDocuments(IMongoDatabase database, string collectionName)
     {
         var collection = database.GetCollection<BsonDocument>(collectionName);
@@ -63,7 +74,9 @@ class Program
 
         foreach (var document in documents)
         {
-            Console.WriteLine(document.ToString());
+            var data = document.GetValue("data").AsBsonDocument;
+            Console.WriteLine(data.ToString());
         }
     }
+
 }
