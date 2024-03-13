@@ -9,8 +9,6 @@ using MongoDB.Driver;
 
 class Program
 {
-
-
     private static readonly HttpClient client = new HttpClient();
     private static MongoClient mongoClient = new MongoClient();
 
@@ -35,7 +33,7 @@ class Program
         client.DefaultRequestHeaders.Accept.Add(
             new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
-        var response = await client.GetStringAsync("https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/prix-des-carburants-en-france-flux-instantane-v2/records?limit=20");
+        var response = await client.GetStringAsync("https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/prix-des-carburants-en-france-flux-instantane-v2/records?limit=100");
         var data = response;
         return data;
     }
